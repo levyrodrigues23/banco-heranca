@@ -1,73 +1,50 @@
-from campus_lista import CampusLista
-
-def menu(ufc: CampusLista):
-    
-    while True:
-        print("\n" + "="*40)
-        print(" --CAMPUS UFC-- ".center(40))
-        print("="*40)
-        print("1 - Cadastrar Campus")
-        print("2 - Cadastrar Curso em Campus")
-        print("3 - Verificar os Campus e Cursos")
-        print("4 - Remover Campus")
-        print("5 - Remover Curso de Campus")
-        print("6 - Atualizar Campus")
-        print("7 - Atualizar Curso de Campus")
-        print("0 - Sair")
-        print("="*40)
-    
-        opcao = input("\nEscolha uma opção: ").strip()
-        
-        if opcao == "0":
-            print("\nObrigado por usar o sistema! Tenha um bom dia.")
-            break
-        
-        elif opcao == "1":
-            nome_campus = input("\nDigite o nome do campus: ").strip()
-            ufc.cadastrar_campus(nome_campus)
-        
-        elif opcao == "2":
-            nome_campus = input("\nDigite o nome do campus: ").strip()
-            curso_novo = input("Digite o nome do curso: ").strip()
-            ufc.cadastrar_curso_campus(nome_campus, curso_novo)
-        
-        elif opcao == "3":
-            ufc.verificar_os_campus()
-        
-        elif opcao == "4":
-            nome_campus = input("\nDigite o nome do campus a remover: ").strip()
-            ufc.remover_campus(nome_campus)
-        
-        elif opcao == "5":
-            nome_campus = input("\nDigite o nome do campus: ").strip()
-            nome_curso = input("Digite o nome do curso a remover: ").strip()
-            ufc.remover_curso_campus(nome_curso, nome_campus)
-        
-        elif opcao == "6":
-            nome_campus = input("\nDigite o nome do campus atual: ").strip()
-            novo_nome = input("Digite o novo nome do campus: ").strip()
-            ufc.atualizar_campus(nome_campus, novo_nome)
-        
-        elif opcao == "7":
-            nome_campus = input("\nDigite o nome do campus: ").strip()
-            nome_curso = input("Digite o nome do curso atual: ").strip()
-            novo_nome = input("Digite o novo nome do curso: ").strip()
-            ufc.atualizar_curso_campus(nome_curso, nome_campus, novo_nome)
-        
-        else:
-            print("\nSinto muito, mas tente novamente porque essa opcao é inválida.")
-
+from contas import ContaCorrente, ContaPoupanca, ContaInvestimento, Conta
+from bancoLista import BancoLista
 
 def main():
-    print("\n" + "="*50)
-    print(" BEM-VINDO AO SISTEMA DE GERENCIAMENTO DA UFC ".center(50))
-    print("="*50 + "\n")
-    
-    ufc = CampusLista()
-    menu(ufc)  # Passa o objeto para o menu
-
+    while True:
+        print("\n Sistema Bancario\n")
+        print("1. Cadastrar Banco")
+        print("2. Cadastrar Conta")
+        print("3. Listar Bancos")
+        print("4. Total de Contas")
+        print("5. Total de Bancos")
+        print("6. Sair")
+        escolha = input("escolha uma opção: ")
+        banco_lista = BancoLista()
+        if escolha == "1":
+            nome_banco = input("digite o nome do banco a ser cadastrado: ")
+            banco_lista.cadastrar_banco(nome_banco)
+        elif escolha == "2":
+            tipo_conta = input("digite o tipo de conta (corrente/poupanca/investimento): ").lower()
+            numero = input("digite o número da conta: ")
+            banco = input("digite o nome do banco: ")
+            saldo = float(input("digite o saldo inicial: "))
+            if tipo_conta == "corrente":
+                limite = float(input("digite o limite do cheque especial: "))
+                conta = ContaCorrente(numero, banco, saldo, limite)
+            elif tipo_conta == "poupanca":
+                taxa_juros = float(input("digite a taxa de juros (%): "))
+                conta = ContaPoupanca(numero, banco, saldo, taxa_juros)
+            elif tipo_conta == "investimento":
+                tipo_investimento = input("digite o tipo de investimento: ")
+                conta = ContaInvestimento(numero, banco, saldo, tipo_investimento)
+            else:
+                print("tipo de conta inválido.")
+                continue
+            banco_lista.cadastrar_conta(conta)
+        elif escolha == "3":
+            banco_lista.get_banco()
+        elif escolha == "4":
+            banco_lista.get_total_contas()
+        elif escolha == "5":
+            banco_lista.get_total_bancos()
+        elif escolha == "6":
+            print("saindo do sistema bancario, obrigado por usar.")
+            break
+        else:
+            print("opção invalida, tende novamente.")
+        
 
 if __name__ == "__main__":
     main()
-
-
