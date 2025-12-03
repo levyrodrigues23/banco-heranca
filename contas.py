@@ -1,83 +1,103 @@
-class Conta:
-    
-    def __init__(self, numero, banco, saldo=0.0):
-        self._numero = numero
-        self._saldo = saldo
-        self._banco = banco
-        
-    def creditar(self, valor):
-        self._saldo += valor
+# contas.py
 
-    def debitar(self, valor):
-        if self._saldo >= valor:
-            self._saldo -= valor
-        else:
-            print("voce está com saldo insuficiente!")
-    
-    def get_saldo(self):
-        return self._saldo
-    
-    
-# eu vi num livro que tem um metodo que eu posso usar um decorador property para poder aplicar get e set, desenvolvedores java não vao gostar disso mas é alto como vai ficar abaixo.
+class Conta:
+    def __init__(self, numero, cliente, saldo=0.0):
+        self._numero = numero
+        self._cliente = cliente
+        self._saldo = saldo
+
     @property
     def numero(self):
         return self._numero
-    
-    @numero.setter
-    def numero(self, numero):
-        self._numero = numero
-    
+
     @property
-    def banco(self):
-        return self._banco
-    
-    @banco.setter
-    def banco(self, banco):
-        self._banco = banco
-    
-    def encerrar_conta(self):
-        self._saldo = 0.0
-        print(f"a conta {self._numero} foi encerrada com sucesso!")
-        
-        
+    def cliente(self):
+        return self._cliente
+
+    @property
+    def saldo(self):
+        return self._saldo
+
+    def depositar(self, valor):
+        if valor <= 0:
+            print("Valor de depósito deve ser positivo.")
+            return
+        self._saldo += valor
+
+    def sacar(self, valor):
+        print("Operação de saque não implementada para este tipo de conta.")
+        return False
+
+    def detalhes(self):
+        return f"Conta {self._numero} - {self._cliente} | Saldo: R$ {self._saldo:.2f}"
+
+
 class ContaCorrente(Conta):
-    def __init__(self, numero, banco, saldo=0.0, limite=0.0):
-        super().__init__(numero, banco, saldo)
+    def __init__(self, numero, cliente, saldo=0.0, limite=500.0):
+        super().__init__(numero, cliente, saldo)
         self._limite = limite
     
-    def usar_limite(self, valor):
-        if valor <= self._limite:
-            self._saldo -= valor
-            print(f"Você usou {valor} do cheque especial para aplicar no limite")
-        else:
-            print("sinto muito mas o valor acabou passando o limite permitido.")
+    @property
+    def limite(self):
+        return self._limite
+
+    def sacar(self, valor):
+        if valor <= 0:
+            print("Valor inválido para saque.")
+            return False
+
+        if valor > self._saldo + self._limite:
+            print("Saque excede saldo + limite.")
+            return False
+
+        self._saldo -= valor
+        return True
+    
+    def detalhes(self):
+        detalhes_base = super().detalhes()
+        return f"{detalhes_base} | Limite: R$ {self._limite:.2f}"
+
 
 class ContaPoupanca(Conta):
-    def __init__(self, numero, banco, saldo=0.0, taxa_juros=0.0):
-        super().__init__(numero, banco, saldo)
-        self._taxa_juros = taxa_juros
-        
-    def aplicar_juros(self):
-        juros = self._saldo * self._taxa_juros / 100
-        self._saldo += juros
-        print(f"Juros de {juros} aplicados à conta poupança.")
-        
+    def __init__(self, numero, cliente, saldo=0.0):
+        super().__init__(numero, cliente, saldo)
+
+    def sacar(self, valor):
+        if valor <= 0:
+            print("Valor inválido para saque.")
+            return False
+
+        if valor > self._saldo:
+            print("Saque excede saldo disponível na poupança.")
+            return False
+
+        self._saldo -= valor
+        return True
+
+
 class ContaInvestimento(Conta):
-    def __init__(self, numero, banco, saldo=0.0, tipo_investimento="Ações"):
-        super().__init__(numero, banco, saldo)
-        self.tipo_investimento = tipo_investimento
+    def __init__(self, numero, cliente, saldo=0.0):
+        super().__init__(numero, cliente, saldo)
+
+    def sacar(self, valor):
+        if valor <= 0:
+            print("Valor inválido para saque.")
+            return False
+
+        if valor > self._saldo:
+            print("Saque excede saldo disponível.")
+            return False
+
+        self._saldo -= valor
+        return True
+
+    def depositar(self, valor):
+        """Aplica um bônus de 10% para depósitos/transferências recebidos."""
+        if valor <= 0:
+            print("Valor de depósito deve ser positivo.")
+            return
         
-    def investir(self, valor):
-        if valor <= self._saldo:
-            self._saldo -= valor
-            print(f"voce investiu {valor} em {self.tipo_investimento}.")
-        else:
-            print("saldo insuficiente para investir")
-        
-
-
-
-
-
-
-
+        bonus = valor * 0.10
+        valor_total = valor + bonus
+        super().depositar(valor_total)
+        print(f"Bônus de R$ {bonus:.2f} aplicado para Conta Investimento!")
